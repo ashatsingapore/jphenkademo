@@ -1,0 +1,133 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>JS plumb test</title>
+        <script type="text/javascript" src="js/jquery-1.9.0-min.js"></script>
+        <script type="text/javascript" src="js/jquery-ui-1.9.2.min.js"></script>
+        <!--script type="text/javascript" src="js/jquery-1.8.1.min.js"></script>
+        <script type="text/javascript" src="js/jquery-ui-1.8.23.min.js"></script-->
+        <script type="text/javascript" src="js/jquery.jsPlumb-1.3.16-all-min.js"></script>
+    
+        <style>
+        .window { 
+            background-color: #EEEEEF;
+            border: 1px solid #346789;
+            border-radius: 0.5em;
+            box-shadow: 2px 2px 5px #AAAAAA;
+            color: black;
+            height: 5em;
+            position: absolute;
+            width: 5em;
+        }
+
+        .window:hover { 
+            box-shadow: 2px 2px 19px #AAAAAA;
+            cursor: pointer;
+        }
+
+
+        .button_add, .button_add_window, .button_remove, .button {
+            background-color: deepskyblue;
+            text-align: center;
+            border: 1px solid;
+        }
+
+        .button_container {
+            margin: 5px;
+            background-color: #aaaaaa
+        }
+    </style>
+
+
+     <script>
+        
+        jsPlumb.ready(function () {
+
+            
+            //FIX DOM:
+            $(("#container1"))[0].innerHTML = $(("#container0"))[0].innerHTML;
+
+            //all windows are draggable
+            jsPlumb.draggable($(".window"));
+
+
+            var anEndpointDestination = {
+                endpoint: "Dot",
+                isSource: true,
+                isTarget: true,
+                maxConnections: 1,
+
+        anchor:"AutoDefault"
+            };
+
+    
+
+            //Add additional anchor
+            $(".button_add").live("click", function () {
+
+                var parentnode = $(this)[0].parentNode.parentNode;
+
+                
+                jsPlumb.addEndpoint(
+                    parentnode,
+                    anEndpointDestination
+                );
+
+            });
+            
+            //Remove anchor 
+            $(".button_remove").live("click", function () {
+
+                var parentnode = $(this)[0].parentNode.parentNode;
+
+                //get list of current endpoints
+                var endpoints = jsPlumb.getEndpoints(parentnode);
+                
+                //remove last one
+                
+                if (endpoints.length > 0) {
+                    jsPlumb.deleteEndpoint(endpoints[endpoints.length - 1]);
+                }
+            });
+            
+
+            //adds new window
+            $(".button_add_window").click(function () {
+
+                var id = "dynamic_" + $(".window").length;
+                
+                //create new window and add it to the body
+                $('<div class="window" id="' + id + '" >').appendTo('body').html($(("#container0"))[0].innerHTML);
+
+                //set jsplumb properties
+                jsPlumb.draggable($('#' + id));
+            });
+        });
+    </script>
+
+</head>
+    <body >
+        
+        <!-- Adds new windows to the page -->
+        <div class="window" style="left: 600px" id="details">
+            <p style="text-align: center">Window</p>
+            <div class="button_container">
+                <div class="button_add_window">Add</div>
+            </div>
+        </div>
+        
+        <!-- Primary window - used as html templated for descendants -->
+        <div class="window" style="left: 20px" id="container0">
+            <div class="button_container">
+                <div class="button_add">Add</div>
+                <div class="button_remove">Remove</div>
+            </div>
+        </div>
+
+        <div class="window" style="left: 200px" id="container1">
+        </div>
+     
+
+    </body>
+</html>

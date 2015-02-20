@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>jQuery UI Sortable - Connect lists</title>
+  <link rel="stylesheet" href="../../jquery-ui-1.11.3/jquery-ui.css">
+  <script src="../../external/jquery-1.9.0-min.js"></script>
+  <script src="../../external/jquery-ui-1.9.2.min.js"></script>
+  <script src="../../external/jquery.ui.touch-punch-0.2.2.min.js"></script>
+
+  <!-- JS -->
+  <!-- support lib for bezier stuff -->
+  <script src="../../lib/jsBezier-0.6.js"></script>
+  <!-- event adapter -->
+  <script src="../../lib/mottle-0.4.js"></script>
+  <!-- geom functions -->
+  <script src="../../lib/biltong-0.2.js"></script>
+  <!-- jsplumb util -->
+  <script src="../../src/util.js"></script>
+  <script src="../../src/browser-util.js"></script>
+  <!-- base DOM adapter -->
+  <script src="../../src/dom-adapter.js"></script>
+  <!-- main jsplumb engine -->
+  <script src="../../src/jsPlumb.js"></script>
+  <!-- endpoint -->
+  <script src="../../src/endpoint.js"></script>
+  <!-- connection -->
+  <script src="../../src/connection.js"></script>
+  <!-- anchors -->
+  <script src="../../src/anchors.js"></script>
+  <!-- connectors, endpoint and overlays  -->
+  <script src="../../src/defaults.js"></script>
+  <!-- bezier connectors -->
+  <script src="../../src/connectors-bezier.js"></script>
+  <!-- state machine connectors -->
+  <script src="../../src/connectors-statemachine.js"></script>
+  <!-- flowchart connectors -->
+  <script src="../../src/connectors-flowchart.js"></script>
+  <script src="../../src/connector-editors.js"></script>
+  <!-- SVG renderer -->
+  <script src="../../src/renderers-svg.js"></script>
+
+
+  <!-- vml renderer -->
+  <script src="../../src/renderers-vml.js"></script>
+
+  <!-- common adapter -->
+  <script src="../../src/base-library-adapter.js"></script>
+  <!-- jquery jsPlumb adapter -->
+  <script src="../../src/jquery.jsPlumb.js"></script>
+  
+  
+  <style>
+    .activities {
+      border: 1px solid #eee;
+      width: 142px;
+      min-height: 120px;
+      list-style-type: none;
+      padding: 5px 0 0 10px;
+      margin: 0 10px;
+    }
+
+    .activities li {
+      font-weight: normal;
+      font: 1em arial, sans-serif;
+      text-align: center;
+      margin: 0 5px 5px 5px;
+      padding: 2px;
+      width: 120px;
+    }
+
+    .window { 
+      background-color: #EEEEEF;
+      border: 1px solid #346789;
+      border-radius: 0.5em;
+      box-shadow: 2px 2px 19px #AAAAAA;
+      color: black;
+      min-height: 240px;
+      min-width: 120px;
+      float: left;
+      margin: 40px;
+    }
+
+    .window-title {
+      font-weight: bold;
+      font: 15px arial, sans-serif;
+      padding: 1.5em;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .state-info {
+      font-weight: normal;
+      font: 12px arial, sans-serif;
+      padding: 0 10px 10px 15px;
+    }
+    
+    #grid { list-style-type: none; margin: 0; padding: 0; min-width: 900px;}
+    #grid li { float: left; }
+
+  </style>
+  <script>
+    jsPlumb.ready(function () {
+        
+        $(function() {
+          $( "#sortable1, #sortable2, #sortable3, #sortable4" ).sortable({
+            connectWith: ".connectedSortable",
+            receive: function(event, ui) {
+                // if > 4, do not allow more activities
+                if ($(this).children().length > 4) {
+                    //ui.sender: will cancel the change.
+                    //Useful in the 'receive' callback.
+                    $(ui.sender).sortable('cancel');
+                    alert('Only 4 activities allowed per station!');
+                }
+            }
+          }).disableSelection();
+        });
+
+        var anEndpointDestination = {
+              endpoint: "Dot",
+              isSource: true,
+              isTarget: true,
+              maxConnections: 2,
+              anchor:["Right", "Left" ]
+        };
+
+        //jsPlumb.draggable($(".connectedSortable"));
+        //perform operation only after DOM is loaded
+        var e0 = jsPlumb.addEndpoint("container0",
+                    anEndpointDestination),
+            e1 = jsPlumb.addEndpoint("container1",
+                    anEndpointDestination),
+            e2 = jsPlumb.addEndpoint("container1",
+                    anEndpointDestination),
+            e3 = jsPlumb.addEndpoint("container2",
+                    anEndpointDestination);
+            e4 = jsPlumb.addEndpoint("container2",
+                    anEndpointDestination),
+            e5 = jsPlumb.addEndpoint("container3",
+                    anEndpointDestination);
+
+        jsPlumb.connect({ 
+          source: e0, 
+          target: e1,
+          connector:[ "Bezier", { curviness:100 } ]
+        });
+
+        jsPlumb.connect({ 
+          source: e2, 
+          target: e3,
+          connector:[ "Bezier", { curviness:100 } ]
+        });
+
+        jsPlumb.connect({ 
+          source: e4, 
+          target: e5,
+          connector:[ "Bezier", { curviness:100 } ]
+        });
+
+        /*jsPlumb.connect({ source: e0, target: e1, 
+            newConnection:true,
+            anchors:["Right", "Left" ],
+            endpoint:"Rectangle",
+            endpointStyle:{ fillStyle: "yellow" }
+       });*/
+
+    });
+  </script>
+</head>
+<body>
+<ul id="grid"> 
+  <li class="window ui-state-default" style="left: 20px" id="container0">
+    <div class="window-title">Station-1</div>
+    <div class="state-info">Resources: 2<br>Proc Time: 5</div>
+    <ul id="sortable1" class="connectedSortable activities">
+      <li class="ui-state-default">Activity 1</li>
+      <li class="ui-state-default">Activity 2</li>
+      <li class="ui-state-default">Activity 3</li>
+      <li class="ui-state-default">Activity 4</li>
+    </ul>
+  </li>
+   
+  <li class="window ui-state-default"  style="left: 200px" id="container1">
+    <div class="window-title">Station-2</div>
+    <div class="state-info">Resources: 2<br>Proc Time: 5</div>
+    <ul id="sortable2" class="connectedSortable activities">
+      <li class="ui-state-highlight">Activity 1</li>
+      <li class="ui-state-highlight">Activity 2</li>
+    </ul>
+  </li>
+
+  <li class="window ui-state-default" style="left: 20px" id="container2">
+    <div class="window-title">Station-3</div>
+    <div class="state-info">Resources: 2<br>Proc Time: 5</div>
+    <ul id="sortable3" class="connectedSortable activities">
+      <li class="ui-state-default">Activity 5</li>
+      <li class="ui-state-default">Activity 6</li>
+      <li class="ui-state-default">Activity 7</li>
+    </ul>
+  </li>
+ 
+  <li class="window ui-state-default"  style="left: 200px" id="container3">
+    <div class="window-title">Station-4</div>
+    <div class="state-info">Resources: 2<br>Proc Time: 5</div>
+    <ul id="sortable4" class="connectedSortable activities">
+      <li class="ui-state-highlight">Activity 3</li>
+      <li class="ui-state-highlight">Activity 4</li>
+    </ul>
+  </li>
+
+</ul>
+</body>
+</html>
